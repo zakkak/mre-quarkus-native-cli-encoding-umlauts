@@ -3,11 +3,7 @@ package org.acme;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
 
-/**
- * TODO r.hartinger write comment
- *
- * @author r.hartinger, 11.08.2025
- */
+
 @CommandLine.Command
 public class HelloCommand implements Runnable {
 
@@ -15,9 +11,6 @@ public class HelloCommand implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("hello with umlauts äöüß");
-        System.out.println("normal line");
-
         log.warn("hello with umlauts äöüß from logger");
     }
 }
