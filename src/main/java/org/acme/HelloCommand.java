@@ -3,11 +3,7 @@ package org.acme;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
 
-/**
- * TODO r.hartinger write comment
- *
- * @author r.hartinger, 11.08.2025
- */
+
 @CommandLine.Command
 public class HelloCommand implements Runnable {
 
