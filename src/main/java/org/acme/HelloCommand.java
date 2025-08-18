@@ -15,8 +15,7 @@ public class HelloCommand implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("hello with umlauts äöüß");
-        System.out.println("normal line");
+        log.warn("foo: \u00c4, \u00e4 \u00d6, \u00f6 \u00dc, \u00fc \u00df");
 
         log.warn("hello with umlauts äöüß from logger");
     }
