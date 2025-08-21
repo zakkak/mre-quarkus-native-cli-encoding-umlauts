@@ -1,0 +1,62 @@
+name: Test Umlauts Output
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        quarkus_version: [ "3.24.5", "3.25.2" ]
+    name: ${{ matrix.quarkus_version }} - Test Umlauts in logs
+    env:
+      LANG: de-DE
+      LANGUAGE: de-DE
+      LC_ALL: de-DE
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'      # See 'Options' for more details
+          distribution: 'mandrel' # See 'Supported distributions' for available options
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Example step
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+
+      - name: Set locale
+        shell: pwsh
+        run: |
+          Get-WinSystemLocale
+          Set-WinSystemLocale -SystemLocale de-DE
+          Get-WinSystemLocale
+          Install-Language de-DE
+          Set-Culture de-DE
+          Get-WinSystemLocale
+
+      - name: Build native image with Maven (Windows)
+        shell: cmd
+        run: |
+          systeminfo | findstr ;
+          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+          mvn package -Dnative -Dquarkus.platform.version=${{ matrix.quarkus_version }}
+
+      - name: Run native HelloCommand and check umlauts
+        shell: cmd
+        run: |
+          systeminfo | findstr ;
+          ${{ github.workspace }}\target\foo-${{ matrix.quarkus_version }}-runner.exe > output.log
+          type output.log
+          findstr /C:"äöüß" output.log
